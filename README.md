@@ -87,7 +87,7 @@ This function retrieves the balance of `accountA`.
 The main account used for this Node module.
 ```Javascript
 function retrieveBalance() {
-    console.log(accountA);
+    console.log("Your current balance is: " + accountA);
 }
 ```
 
@@ -96,28 +96,31 @@ This function simulates the cash withdrawal process of an **ATM**.
 
 ```Javascript
 function withdraw() {
-    rl.question('How much would you like to withdraw? Please only choose 10, 50\n ', (answer) => {
-        const amount = parseInt(answer);
-        if (amount == 50 || amount == 10) {
-            if (amount > accountA) {
-                console.log("Insufficient balance. Transaction failed.");
+    return new Promise((resolve) => {
+        rl.question('How much would you like to withdraw? Please only choose 10, 50\n ', (answer) => {
+            const amount = parseInt(answer);
+            if (amount == 50 || amount == 10) {
+                if (amount > accountA) {
+                    console.log("Insufficient balance. Transaction failed.");
+                }
+                else {
+                    accountA = accountA - amount;
+                    const transaction = {
+                        Transaction: 'Withdraw',
+                        Amount: amount,
+                        DateTime: formattedDateTime
+                    };
+                    statements.push(transaction);
+                    console.log("Withdrawal successful. Your remaining balance is: " + accountA);
+                    console.log(statements);
+                }
             }
             else {
-                accountA = accountA - amount;
-                const transaction = {
-                    Transaction: 'Withdraw',
-                    Amount: amount,
-                    DateTime: formattedDateTime
-                };
-                statement.push(transaction);
-                console.log("Withdrawal successful. Your remaining balance is: " + accountA);
-                bankStatement();
+                console.log("You have chosen an invalid amount. Please only choose 10, 50\n ");
             }
-        }
-        else {
-            console.log("You have chosen an invvalid amount. Please only choose 10, 50\n ");
-        }
-    })
+            resolve();
+        })
+    });
 }
 ```
 
@@ -144,22 +147,26 @@ This function simulates the cash deposit of an **atm**
 
 ```Javascript
 function deposit() {
-    rl.question('How much would you like to deposit?\n ', (answer) => {
-        const num = parseInt(answer);
-        if (isNaN(num) || num <= 0) {
-            console.log("Invalid amount. Please try again.")
-        }
-        else {
-            accountA = accountA + num;
-            const transaction = {
-                Transaction: 'Deposit',
-                Amount: num,
-                DateTime: formattedDateTime
-            };
-            statement.push(transaction);
-            console.log("Deposit successful. Your new balance is: " + accountA);
-        }
-    })
+    return new Promise((resolve) => {
+        rl.question('How much would you like to deposit?\n ', (answer) => {
+            const num = parseInt(answer);
+            if (isNaN(num) || num <= 0) {
+                console.log("Invalid amount. Please try again.")
+            }
+            else {
+                accountA = accountA + num;
+                const transaction = {
+                    Transaction: 'Deposit',
+                    Amount: num,
+                    DateTime: formattedDateTime
+                };
+                statements.push(transaction);
+                console.log("Deposit successful. Your new balance is: " + accountA);
+                console.log(statements);
+            }
+            resolve();
+        })
+    });
 }
 ```
 
@@ -185,22 +192,27 @@ In this case `accountA` to `accountB`.
 
 ```Javascript
 function fundTransfer() {
-    rl.question('How much would like to transfer?\n ', (answer) => {
-        const fund = parseInt(answer);
-        if (isNaN(fund) || fund <= 0 || fund > accountA) {
-            console.log("Invalid amount. Transfer failed.");
-        } else {
-            accountB = accountB + answer;
-            accountA = accountA - answer;
-            const transaction = {
-                Transaction: 'Fund Transfer',
-                Amount: fund,
-                DateTime: formattedDateTime
-            };
-            statement.push(transaction);
-            console.log("Fund transfer successful. Your remaining balance is: " + accountA);
-        }
-    })
+    return new Promise((resolve) => {
+        rl.question('How much would like to transfer?\n ', (answer) => {
+            const fund = parseInt(answer);
+            if (isNaN(fund) || fund <= 0 || fund > accountA) {
+                console.log("Invalid amount. Transfer failed.");
+            }
+            else {
+                accountB = accountB + answer;
+                accountA = accountA - answer;
+                const transaction = {
+                    Transaction: 'Fund Transfer',
+                    Amount: fund,
+                    DateTime: formattedDateTime
+                };
+                statements.push(transaction);
+                console.log("Fund transfer successful. Your remaining balance is: " + accountA);
+                console.log(statements);
+            }
+            resolve();
+        })
+    });
 }
 ```
 
@@ -224,16 +236,17 @@ The final function allows you to search for a transaction type saved in the `sta
 ```Javascript
 function findbankStatement() {
     console.log(statements);
-    rl.question('Enter transaction type to search: ', (answer) => {
-        const foundTransaction = statements.find(statement => statement.Transaction.toLowerCase() === answer.toLowerCase());
+    return new Promise((resolve) => {
+        rl.question('Enter transaction type to search: ', (answer) => {
+            const foundTransaction = statements.find(statement => statement.Transaction.toLowerCase() === answer.toLowerCase());
 
-        if (foundTransaction) {
-            console.log(foundTransaction);
-        } else {
-            console.log(`No ${answer} found.`);
-        }
-
-        rl.close();
+            if (foundTransaction) {
+                console.log(foundTransaction);
+            } else {
+                console.log(`No ${answer} found.`);
+            }
+            resolve();
+        });
     });
 }
 ```
