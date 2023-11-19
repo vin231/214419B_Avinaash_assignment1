@@ -5,13 +5,43 @@ This node module represents the function of an ATM and its basic services.
 To use this node module, you will need top download Node.js. Here's a link to Node.js "https://nodejs.org/en/download"
 
 # How to get started
-You will need to create an **app.js** file to your work folder.
+An **app.js** file is included in the project work folder.
 
-Once done, add the following line at the top of your **app.js** file.  
+The following line at the top of your **app.js** file has been added.  
 ```Javascript
 "const atm = require("./Avinaash_ATM.js");"
 ```
 This allows your **app.js** file to access the contents of the node module.
+
+This project was designed to run `synchronously` so that all the functions work as intended.
+
+- Here is an example of the **app.js** file.
+```Javascript
+const atm = require("./Avinaash_ATM.js");
+
+async function run() {
+    await atm.retrieveBalance();
+    await atm.deposit();
+    await atm.withdraw();
+    await atm.fundTransfer();
+
+    atm.rl.close();
+}
+
+run();
+```
+
+You will need to type `await atm.<theFunctionYouNeed>();` inside the `async function run`.
+
+- For Example,
+```Javascript
+async function run() {
+    await atm.retrieveBalance();
+
+    atm.rl.close();
+}
+```
+You will not need to modify anything else in the file.
 
 # Account balances and statement array
 The following code is used to store dummy values for both the account balances and the statements of **accountA**.
